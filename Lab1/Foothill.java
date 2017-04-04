@@ -1,5 +1,5 @@
 /*Source code for Lab assignment 1
- Written by Thanh Nguyen 01/10/16
+ Written by Thanh Nguyen 01/10/16*/
 
 public class Foothill
 {
@@ -241,7 +241,7 @@ class Hand
       
       return theCard;
    }
-}*/
+}
 
 //Solution
 //CS 1B
@@ -265,9 +265,9 @@ class Hand
     System.out.println( card1 + "\n" + card2 + "\n" +
           card3 + "\n");
  }
-}*/
+}
 
-/*//Card class --------------------------------------------------------------------
+//Card class --------------------------------------------------------------------
 class Card
 {   
  // type and constants
@@ -382,7 +382,7 @@ class Card
     else
        return false;
  }
-}*/
+}
 
 /* ---------------------- run Card class test ------------------
 A of spades
@@ -396,321 +396,4 @@ J of clubs
 
 
 
-//CS 1B
-//Assignment #1 - Instructor Solution - Phase 2:  Hand Class ============
-
-public class Foothill
-{
- public static void main(String[] args)
- {
-    Card card1 = new Card('3', Card.Suit.clubs),
-          card2 = new Card('T', Card.Suit.clubs),
-          card3 = new Card('9', Card.Suit.hearts),
-          playedCard;      
-
-    Hand hand = new Hand();
-
-    while (true )
-    {
-       if ( ! hand.takeCard(card1) )
-       {
-          System.out.println( "Hand full" );
-          break;
-       }
-       if ( ! hand.takeCard(card2) )
-       {
-          System.out.println( "Hand full" );
-          break;
-       }
-       if ( ! hand.takeCard(card3) )
-       {
-          System.out.println( "Hand full" );
-          break;
-       }
-    }
-
-    System.out.println("After deal\n" +  hand.toString() +"\n");
-
-    System.out.println("Testing inspectCard()");
-    System.out.println(hand.inspectCard(5).toString());
-    System.out.println(hand.inspectCard(200).toString());
-
-    while ( hand.getNumCards() > 0 )
-       System.out.println("Playing " + hand.playCard().toString());
-
-    System.out.println("\nAfter playing all cards\n"+ hand.toString() );
- }
-}
-
-//Card class --------------------------------------------------------------------
-class Card
-{   
- // type and constants
- public enum Suit { clubs, diamonds, hearts, spades }
-
- // private data
- private char value;
- private Suit suit;
- boolean errorFlag;
-
- // 4 overloaded constructors
- public Card(char value, Suit suit)
- {
-    set(value, suit);
- }
-
- public Card(char value)
- {
-    this(value, Suit.spades);
- }
- public Card()
- {
-    this('A', Suit.spades);
- }
- // copy constructor
- public Card(Card card)
- {
-    this(card.value, card.suit);
- }
-
- // mutators
- public boolean set(char value, Suit suit)
- {
-    char upVal;            // for upcasing char
-
-    // convert to uppercase to simplify
-    upVal = Character.toUpperCase(value);
-
-    if ( !isValid(upVal, suit))
-    {
-       errorFlag = true;
-       return false;
-    }
-
-    // else implied
-    errorFlag = false;
-    this.value = upVal;
-    this.suit = suit;
-    return true;
- }
-
- // accessors
- public char getVal()
- {
-    return value;
- }
-
- public Suit getSuit()
- {
-    return suit;
- }
-
- public boolean getErrorFlag()
- {
-    return errorFlag;
- }
-
- public boolean equals(Card card)
- {
-    if (this.value != card.value)
-       return false;
-    if (this.suit != card.suit)
-       return false;
-    if (this.errorFlag != card.errorFlag)
-       return false;
-    return true;
- }
-
- // stringizer
- public String toString()
- {
-    String retVal;
-
-    if (errorFlag)
-       return "** illegal **";
-
-    // else implied
-
-    retVal =  String.valueOf(value);
-    retVal += " of ";
-    retVal += String.valueOf(suit);
-
-    return retVal;
- }
-
- // helper
- private boolean isValid(char value, Suit suit)
- {
-    char upVal;
-
-    // convert to uppercase to simplify (need #include <cctype>)
-    upVal = Character.toUpperCase(value);
-
-    // check for validity
-    if (
-          upVal == 'A' || upVal == 'K'
-          || upVal == 'Q' || upVal == 'J'
-          || upVal == 'T'
-          || (upVal >= '2' && upVal <= '9')
-          )
-       return true;
-    else
-       return false;
- }
-}
-
-//class Hand  ----------------------------------------------------------------
-class Hand
-{
- public static final int MAX_CARDS_PER_HAND = 4;  // should cover any game
-
- private Card[] myCards;
- private int numCards;
-
- //constructor
- public Hand()
- {
-    // careful - we are only allocating the references
-    myCards = new Card[MAX_CARDS_PER_HAND];
-    resetHand();
- }
-
- // mutators
- public void resetHand() { numCards = 0; }
-
- public boolean takeCard(Card card)
- {
-    if (numCards >= MAX_CARDS_PER_HAND)
-       return false;
-
-    // be frugal - only allocate when needed
-    if (myCards[numCards] == null)
-       myCards[numCards] = new Card();
-
-    // don't just assign:  mutator assures active/undeleted      
-    myCards[numCards++].set( card.getVal(), card.getSuit() );
-    return true;
- }
-
- public Card playCard()
- {
-    // always play  highest card in array.  client will prepare this position.
-    // in rare case that client tries to play from a spent hand, return error
-
-    Card errorReturn = new Card('E', Card.Suit.spades); // in rare cases
-
-    if (numCards == 0)
-       return errorReturn;
-    else
-       return myCards[--numCards];
- }
-
- // accessors
- public String toString()
- {
-    int k;
-    String retVal = "Hand =  ( ";
-
-    for (k = 0; k < numCards; k++)
-    {
-       retVal += myCards[k].toString();
-       if (k < numCards - 1)
-          retVal += ", ";
-    }
-    retVal += " )";
-    return retVal;
- }
-
- int getNumCards()
- {
-    return numCards;
- }
-
- Card inspectCard(int k)
- {
-    // return copy of card at position k.
-    // if client tries to access out-of-bounds card, return error
-
-    Card errorReturn = new Card('E', Card.Suit.spades); // in rare cases
-
-    if (k < 0 || k >= numCards)
-       return errorReturn;
-    else
-       return myCards[k];
- }
-}
-
-/***********************SAMPLE RUN*******************************
- * 
- * Hand full
-After deal
-Hand = ( A of spades, T of hearts, 8 of diamonds, 2 of clubs, A of spades, T of 
-hearts, 8 of diamonds, 2 of clubs, A of spades, T of hearts, 8 of diamonds, 2 of
- clubs, A of spades, T of hearts, 8 of diamonds, 2 of clubs, A of spades, T of h
-earts, 8 of diamonds, 2 of clubs, A of spades, T of hearts, 8 of diamonds, 2 of 
-clubs, A of spades, T of hearts, 8 of diamonds, 2 of clubs, A of spades, T of he
-arts, 8 of diamonds, 2 of clubs, A of spades, T of hearts, 8 of diamonds, 2 of c
-lubs, A of spades, T of hearts, 8 of diamonds, 2 of clubs, A of spades, T of hea
-rts, 8 of diamonds, 2 of clubs, A of spades, T of hearts, 8 of diamonds, 2 of cl
-ubs, A of spades, T of hearts )
-
-Testing inspectCard()
-A of spades
-T of hearts
-[invalid]
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-Playing 2 of clubs
-Playing 8 of diamonds
-Playing T of hearts
-Playing A of spades
-
-After playing all cards
-Hand = ( )
-
-******************************END SAMPLE RUN************************ */
 
